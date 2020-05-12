@@ -1,9 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-const ContactController = require('../controllers/ContactController');
-const contactController = new ContactController();
+const ContactController = new (require('../controllers/ContactController'));
 
-router.post('/send', contactController.send);
+router.post('/send', ContactController.send);
 
 module.exports = router;

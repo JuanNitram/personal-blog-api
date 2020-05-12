@@ -1,33 +1,26 @@
-const mailgun = require('mailgun-js');
-const { apiKey, domain } = require('../config/mailgun');
-
-const mg = mailgun({apiKey, domain})
+const Mailgun = new (require('../facades/Mailgun'));
 
 const ContactController = class {
-    send(req, res) {
-        return mg.messages().send({
-            from: 'no-reply@juanvargas.me',
-            to: 'juanmvg2006@gmail.com',
-            subject: 'New Message',
-            html: `
-                <h2 style="text-align: center">New contact message received!</h2>
-                <p style="text-align: center">Name: ${req.body.name}</p>
-                <p style="text-align: center">Email: ${req.body.email}</p>
-                <p style="text-align: center">Phone: ${req.body.phone}</p>
-                <p style="text-align: center">Message: ${req.body.message}</p>
-            `
-        }, function (error, body) {
-            if(error){
+    async send(req, res) {
+        try{
+            let result = await Mailgun.send(req.body)
+
+            if(result) {
+                return res.json({
+                    status: 'success'
+                });
+            } else {
                 return res.json({
                     status: 'failure',
-                    error: error
+                    error: result
                 });
             }
-
+        } catch (ex) {
             return res.json({
-                status: 'success'
+                status: 'failure',
+                error: error
             });
-        });
+        }
     }
 }
 
